@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutCameraPreview"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:visibility="visible">
+
+    <!-- <FrameLayout
+         android:id="@+id/camera_preview"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_above="@+id/textViewCameraCapture"
+         android:animateLayoutChanges="true" />-->
+
+
+
+    <com.meetsuccess.scannerreceipt.ui.camera.CameraSourcePreview
+        android:id="@+id/preview"
+        android:visibility="visible"
+        android:layout_centerInParent="true"
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true">
+        <com.meetsuccess.scannerreceipt.ui.camera.GraphicOverlay
+            android:id="@+id/graphicOverlay"
+            android:layout_margin="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </com.meetsuccess.scannerreceipt.ui.camera.CameraSourcePreview>
+
+    <View
+        android:id="@+id/camera_face_limit_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="30dp"
+
+
+        android:layout_centerInParent="true"
+        android:layout_above="@+id/textViewMessage"
+        android:background="@drawable/custom_camera_face_limit" />
+    <TextView
+        android:id="@+id/textViewMessage"
+        android:visibility="visible"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10sp"
+        android:text=""
+        android:textAlignment="center"
+        android:textColor="#D50000"
+        android:textStyle="normal"
+        android:background="#ffffff"
+        android:textSize="16dp"
+        android:layout_above="@+id/textViewCameraCapture"/>
+    <TextView
+        android:id="@+id/textViewCameraCapture"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#ffb300"
+        android:padding="16dp"
+        android:text="show image"
+        android:textAlignment="center"
+        android:textColor="@android:color/white" />
+
+</RelativeLayout>
+
+    <!--<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/topLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:keepScreenOn="true">
+
+        <com.example.textrecognizer.camera.CameraSourcePreview
+            android:id="@+id/preview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.example.textrecognizer.camera.GraphicOverlay
+                android:id="@+id/graphicOverlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </com.example.textrecognizer.camera.CameraSourcePreview>
+
+    </LinearLayout>-->
