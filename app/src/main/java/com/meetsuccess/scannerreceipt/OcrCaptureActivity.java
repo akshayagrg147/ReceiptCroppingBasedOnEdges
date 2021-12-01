@@ -27,6 +27,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.hardware.Camera;
 import android.os.Bundle;
 
@@ -104,6 +105,7 @@ public final class OcrCaptureActivity extends AppCompatActivity {
 
     MyTimer chatTimerTask;
     Timer time;
+    View camera_face_limit_view;
 
     /**
      * Initializes the UI and creates the detector pipeline.
@@ -113,7 +115,7 @@ public final class OcrCaptureActivity extends AppCompatActivity {
         super.onCreate(icicle);
         setContentView(R.layout.activity_ocr_capture);
         textView = findViewById(R.id.textViewMessage);
-
+        camera_face_limit_view=findViewById(R.id.camera_face_limit_view);
 //        new Handler().postDelayed(new Runnable() {
 //            @Override
 //            public void run() {
@@ -214,10 +216,24 @@ public final class OcrCaptureActivity extends AppCompatActivity {
 //
 //                    myBitmap = Bitmap.createBitmap(myBitmap, (int) (width / 2.5), (int) height / 10, width * 2, (height + (int)(height / 2.7)));
 
-                    Log.d("gettingTakenImageSize", height + "--" + width+"---"+(int) (width / 2.5)+"--"+(int) height / 10+"--"+ ((width )+"--"+(height -(int)(height / 2.7))));
+                    Rect rectf = new Rect();
+
+//For coordinates location relative to the parent
+                    camera_face_limit_view.getLocalVisibleRect(rectf);
+
+//For coordinates location relative to the screen/display
+                    camera_face_limit_view.getGlobalVisibleRect(rectf);
+
+
+
+                   // Log.d("gettingTakenImageSize", height + "--" + width+"---"+(int) (width / 2.5)+"--"+(int) height / 10+"--"+ ((width )+"--"+(height -(int)(height / 2.7))));
                     Bitmap myBitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
 
-                    myBitmap = Bitmap.createBitmap(myBitmap, (int) (width / 2.5), (int) height / 10, width , (height -(int)(height / 2.7)));
+                  //  myBitmap = Bitmap.createBitmap(myBitmap, (int) (width / 2.5), (int) height / 10, width , (height -(int)(height / 2.7)));
+                    Log.d("printedreactvalue",rectf.left+"--"+ (int) (rectf.top - 50)+"--"+ (int) rectf.width()+"--"+ (int) rectf.height()+"--"+width+"--"+height);
+
+                    myBitmap= Bitmap.createBitmap(myBitmap, rectf.left, (int) rectf.top - 50, (int) width, (int) height);
+                   // Bitmap croppedBmp = Bitmap.createBitmap(tempBitmap, xValue, (int) face.getPosition().y - 50, (int) face.getWidth(), (int) face.getHeight());
 
 
 
@@ -278,7 +294,17 @@ public final class OcrCaptureActivity extends AppCompatActivity {
         // on screen.
         textRecognizer = new TextRecognizer.Builder(context).build();
         final Boolean[] response = new Boolean[1];
-        textRecognizer.setProcessor(new OcrDetectorProcessor(mGraphicOverlay, this, new OcrDetectorProcessor.SendingMessage() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int height = displayMetrics.heightPixels;
+        int width = displayMetrics.widthPixels;
+        int[] faceLimitPointsArray = new int[4];
+        faceLimitPointsArray[0] = width / 5;
+        //faceLimitPointsArray[1]=height/4;
+        faceLimitPointsArray[1] = width / 5;
+        faceLimitPointsArray[2] = 3 * (width / 5);
+        faceLimitPointsArray[3] = height - width / 3/*3*(width/4)*/;
+        textRecognizer.setProcessor(new OcrDetectorProcessor(mGraphicOverlay,faceLimitPointsArray, this, new OcrDetectorProcessor.SendingMessage() {
             @Override
             public void sendMessage(Boolean str,String blankImage) {
 

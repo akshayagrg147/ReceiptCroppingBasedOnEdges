@@ -37,8 +37,14 @@ public class OcrDetectorProcessor implements Detector.Processor<TextBlock> {
     private Context context;
     int height,width;
 OcrDetectorProcessor.SendingMessage obj;
-    OcrDetectorProcessor(GraphicOverlay<OcrGraphic> ocrGraphicOverlay,Context cnt,OcrDetectorProcessor.SendingMessage obj1) {
+    private int []faceLimitPointsArray;
+
+
+
+
+    OcrDetectorProcessor(GraphicOverlay<OcrGraphic> ocrGraphicOverlay,int []faceLimitPointsArray,Context cnt,OcrDetectorProcessor.SendingMessage obj1) {
         obj=obj1;
+       this.faceLimitPointsArray=faceLimitPointsArray;
         obj.sendMessage(true, "BlankImage");
         mGraphicOverlay = ocrGraphicOverlay;
         context=cnt;
@@ -66,7 +72,7 @@ OcrDetectorProcessor.SendingMessage obj;
             TextBlock item = items.valueAt(i);
 
             final int finalI = i;
-            OcrGraphic graphic = new OcrGraphic(mGraphicOverlay,height,width, item, new OcrGraphic.getResultText() {
+            OcrGraphic graphic = new OcrGraphic(mGraphicOverlay,faceLimitPointsArray,height,width, item, new OcrGraphic.getResultText() {
                 @Override
                 public void checkReceiptNotInBox(Boolean NotReceiptInBox,String String) {
 

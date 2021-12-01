@@ -48,11 +48,13 @@ public class OcrGraphic extends GraphicOverlay.Graphic {
     private final TextBlock mText;
     int h,w;
     private OcrGraphic.getResultText obj;
+    int []gettingPoints;
 
-    OcrGraphic(GraphicOverlay overlay,int height,int width, TextBlock text,OcrGraphic.getResultText bb) {
+    OcrGraphic(GraphicOverlay overlay,int []GettingPoints,int height,int width, TextBlock text,OcrGraphic.getResultText bb) {
 
         super(overlay);
         obj=bb;
+        this.gettingPoints=GettingPoints;
         h=height;
         w=width;
 
@@ -127,13 +129,13 @@ public class OcrGraphic extends GraphicOverlay.Graphic {
 
         // Break the text into multiple lines and draw each one according to its own bounding box.
         List<? extends Text> textComponents = text.getComponents();
-        List<Integer> leftside=new ArrayList<>();
-        List<Integer>  Rightside=new ArrayList<>();
-        List<Integer> Topside=new ArrayList<>();
-        List<Integer> Bottomside=new ArrayList<>();
+        List<Integer> leftside = new ArrayList<>();
+        List<Integer> Rightside = new ArrayList<>();
+        List<Integer> Topside = new ArrayList<>();
+        List<Integer> Bottomside = new ArrayList<>();
 
 
-        for(Text currentText : textComponents) {
+        for (Text currentText : textComponents) {
 
 
             leftside.add(currentText.getBoundingBox().left);
@@ -152,48 +154,127 @@ public class OcrGraphic extends GraphicOverlay.Graphic {
         Collections.sort(Bottomside);
 
 
-
-
-
-         //  Log.d("gettingtesxt","left"+leftside.get(0)+"--"+currentText.getBoundingBox().right+"--"+currentText.getBoundingBox().top+"--"+currentText.getBoundingBox().bottom);
-           // Log.d("gettingtesxt","please put in box"+currentText.getBoundingBox().top);
+        //  Log.d("gettingtesxt","left"+leftside.get(0)+"--"+currentText.getBoundingBox().right+"--"+currentText.getBoundingBox().top+"--"+currentText.getBoundingBox().bottom);
+        // Log.d("gettingtesxt","please put in box"+currentText.getBoundingBox().top);
 
 
 //170  744  20.04
-     //   100>300
-        Log.d("dmdmmdmddm",text.getValue().length()+"--"+text.getValue()+"image is null");
+        //   100>300
 
-        if(text.getValue().length()>0)
-        {
 
-            if((Rightside.get(Rightside.size()-1)-leftside.get(0)<w/35))
-            {
+        float translatex = (leftside.get(0) + (Rightside.get(Rightside.size() - 1) - leftside.get(0)));
+        float translatey = (Topside.get(0) + (Bottomside.get(Bottomside.size() - 1) - Topside.get(0)));
+
+
+        float x = translateX(translatex / 2);
+        float y = translateY(translatey / 2);
+
+        float xOffset = scaleX((Rightside.get(Rightside.size() - 1) - leftside.get(0)) / 2.0f);
+        float yOffset = scaleY(Bottomside.get(Bottomside.size() - 1) - Topside.get(0) / 2.0f);
+        float left = x - xOffset + 50;
+        float top = y - yOffset + 50;
+        float right = x + xOffset - 50;
+        float bottom = y + yOffset - 50;
+        Log.d("ddddddddddddddddddd", Rightside.get(Rightside.size() - 1) + "--" + leftside.get(0) + "--" + xOffset + "--" + yOffset + "--" + left + "--" + top + "--" + right + "--" + bottom);
+
+
+//        if (left < gettingPoints[0] && right > gettingPoints[2] && top > gettingPoints[1] && bottom < gettingPoints[3]) {
+//            //Place your face inside square box
+//
+//            obj.checkReceiptNotInBox(false, "NotBlank");
+//        } else if (left + 20 > gettingPoints[0] && right - left < gettingPoints[2]) {// && right-100<faceLimitPointsArray[2]
+//            //Please come closer to capture the face
+//
+//            obj.CheckReceiptHavingLongDistance(true);
+////            isFaceClickable=true;
+////            attendanceFaceObject.setClickable(true);
+////            attendanceFaceObject.setMessage("Place your face inside square box");//Tap on face
+//        } else {
+//            //Place your face inside square box
+//
+//            obj.checkReceiptNotInBox(false, "NotBlank");
+//        }
+
+
+
+          if (left < gettingPoints[0] && right > gettingPoints[2] && top > gettingPoints[1] && bottom < gettingPoints[3]) {
+
+              //Place your face inside square box
+
+              obj.checkReceiptNotInBox(false, "NotBlank");
+            if (right-left > (gettingPoints[2] - gettingPoints[0])){
+
+                //Please wait we are capturing your face.
+                obj.checkReceiptNotInBox(true, "BlankImage");
+            }else {
+
+                //Please come closer to capture the face
+
                 obj.CheckReceiptHavingLongDistance(true);
-
-            }
-            else if(leftside.get(0)+10<(w/6.35)||Rightside.get(Rightside.size()-1)-10>(w/1.45)||Topside.get(0)-10<(h/103.75))
-            {
-
-                obj.checkReceiptNotInBox(true,"NotBlank");
-
-              //  obj.checkReceiptNotInBox(true," left "+leftside.get(0)+"--"+(w/6.35)+" right "+Rightside.get(0)+"---"+(w/1.45)+" top "+Topside.get(0)+"--"+h/103.75);
-
-
-            }
-            else {
-             //   Log.d("dmdmmdmddm",text.getValue().length()+"--"+text.getValue());
-               // Log.d("rirkifmkfm",Rightside.get(Rightside.size()-1)+"--"+leftside.get(0)+"--"+w/35+"--"+(Rightside.get(Rightside.size()-1)-leftside.get(0)));
-
-
-                obj.checkReceiptNotInBox(false, "NotBlank");
-
             }
         }
-        else
-        { Log.d("dmdmmdmddm",text.getValue().length()+"--"+text.getValue()+"image is null");
+          else if (left > gettingPoints[0] && right < gettingPoints[2] + gettingPoints[0]) {
+            if (right-left > (gettingPoints[2] - gettingPoints[0])){
 
-            obj.checkReceiptNotInBox(true, "BlankImage");
+                //Please wait we are capturing your face.
+                obj.checkReceiptNotInBox(true, "BlankImage");
+            }else {
+                //Please come closer to capture the face
+
+                obj.CheckReceiptHavingLongDistance(true);
+            }
         }
+//            else if (right-left > (faceLimitPointsArray[2] - faceLimitPointsArray[0])){
+//                isFaceClickable = true;
+//                attendanceFaceObject.setClickable(true);
+//                attendanceFaceObject.setMessage("Please wait we are capturing your face.");//Tap on face
+//            }
+        else {
+
+
+            //Place your face inside square box
+
+              obj.checkReceiptNotInBox(false, "NotBlank");
+        }
+
+
+
+
+
+
+//        Log.d("dmdmmdmddm",text.getValue().length()+"--"+text.getValue()+"image is null");
+//
+//        if(text.getValue().length()>0)
+//        {
+//
+//            if((Rightside.get(Rightside.size()-1)-leftside.get(0)<w/35))
+//            {
+//                obj.CheckReceiptHavingLongDistance(true);
+//
+//            }
+//            else if(leftside.get(0)+10<(w/6.35)||Rightside.get(Rightside.size()-1)-10>(w/1.45)||Topside.get(0)-10<(h/103.75))
+//            {
+//
+//                obj.checkReceiptNotInBox(true,"NotBlank");
+//
+//              //  obj.checkReceiptNotInBox(true," left "+leftside.get(0)+"--"+(w/6.35)+" right "+Rightside.get(0)+"---"+(w/1.45)+" top "+Topside.get(0)+"--"+h/103.75);
+//
+//
+//            }
+//            else {
+//             //   Log.d("dmdmmdmddm",text.getValue().length()+"--"+text.getValue());
+//               // Log.d("rirkifmkfm",Rightside.get(Rightside.size()-1)+"--"+leftside.get(0)+"--"+w/35+"--"+(Rightside.get(Rightside.size()-1)-leftside.get(0)));
+//
+//
+//                obj.checkReceiptNotInBox(false, "NotBlank");
+//
+//            }
+//        }
+//        else
+//        { Log.d("dmdmmdmddm",text.getValue().length()+"--"+text.getValue()+"image is null");
+//
+//            obj.checkReceiptNotInBox(true, "BlankImage");
+//        }
 
 
 
