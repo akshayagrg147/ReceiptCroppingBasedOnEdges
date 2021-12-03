@@ -61,7 +61,7 @@
         android:layout_alignParentBottom="true"
         android:background="#ffb300"
         android:padding="16dp"
-        android:text="show image"
+        android:text="Capture image"
         android:textAlignment="center"
         android:textColor="@android:color/white" />
 

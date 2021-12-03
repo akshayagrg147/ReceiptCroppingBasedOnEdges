@@ -153,7 +153,25 @@ public final class OcrCaptureActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
               // captureTheImage();
-                alertDialogShowing();
+              //  alertDialogShowing();
+                mCameraSource.takePicture(null, mPicture);
+                if (textRecognizer!=null)
+                {
+                    Log.e("capture","recognizer not null releasing..");
+                    textRecognizer.release();
+
+
+
+
+
+//               Timer time1 = new Timer();
+//                MyTimer1  chatTimerTask1 = new MyTimer1();
+//                time1.scheduleAtFixedRate(chatTimerTask1, 5000, 3000);
+//                time1.cancel();
+                    // mCameraSource.release();
+
+
+                }
 
             }
         });
@@ -240,6 +258,7 @@ public final class OcrCaptureActivity extends AppCompatActivity {
 
                     byte[] croppedBitMap = getByteArrayFromBitMap(myBitmap);
                     saveTemplateFromByteArray(croppedBitMap, "croppedfile", OcrCaptureActivity.this);
+                    alertDialogShowing();
 
                 }
             };
@@ -254,7 +273,11 @@ public final class OcrCaptureActivity extends AppCompatActivity {
                 fos.write(data);
                 fos.flush();
                 fos.close();
+
             } catch (IOException exception) {
+
+            }
+            finally {
 
             }
         }
