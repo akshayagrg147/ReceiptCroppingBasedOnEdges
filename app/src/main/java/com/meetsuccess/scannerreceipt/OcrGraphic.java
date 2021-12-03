@@ -171,9 +171,9 @@ public class OcrGraphic extends GraphicOverlay.Graphic {
 
         float xOffset = scaleX((Rightside.get(Rightside.size() - 1) - leftside.get(0)) / 2.0f);
         float yOffset = scaleY(Bottomside.get(Bottomside.size() - 1) - Topside.get(0) / 2.0f);
-        float left = x - xOffset + 50;
-        float top = y - yOffset + 50;
-        float right = x + xOffset - 50;
+        float left = x - xOffset + 150;
+        float top = y - yOffset ;
+        float right = x + xOffset - 150;
         float bottom = y + yOffset - 50;
         Log.d("ddddddddddddddddddd", Rightside.get(Rightside.size() - 1) + "--" + leftside.get(0) + "--" + xOffset + "--" + yOffset + "--" + left + "--" + top + "--" + right + "--" + bottom);
 
@@ -201,27 +201,28 @@ public class OcrGraphic extends GraphicOverlay.Graphic {
 
               //Place your face inside square box
 
-              obj.checkReceiptNotInBox(false, "NotBlank");
+
             if (right-left > (gettingPoints[2] - gettingPoints[0])){
 
                 //Please wait we are capturing your face.
-                obj.checkReceiptNotInBox(true, "BlankImage");
+               obj.checkReceiptNotInBox(false, "NotBlank");
             }else {
 
                 //Please come closer to capture the face
 
-                obj.CheckReceiptHavingLongDistance(true);
+                obj.checkReceiptNotInBox(true,"NotBlank");
             }
         }
           else if (left > gettingPoints[0] && right < gettingPoints[2] + gettingPoints[0]) {
             if (right-left > (gettingPoints[2] - gettingPoints[0])){
 
                 //Please wait we are capturing your face.
-                obj.checkReceiptNotInBox(true, "BlankImage");
+                obj.checkReceiptNotInBox(false, "NotBlank");
             }else {
                 //Please come closer to capture the face
+               obj.CheckReceiptHavingLongDistance(true);
 
-                obj.CheckReceiptHavingLongDistance(true);
+              // obj.checkReceiptNotInBox(true,"NotBlank");
             }
         }
 //            else if (right-left > (faceLimitPointsArray[2] - faceLimitPointsArray[0])){
@@ -234,7 +235,7 @@ public class OcrGraphic extends GraphicOverlay.Graphic {
 
             //Place your face inside square box
 
-              obj.checkReceiptNotInBox(false, "NotBlank");
+             obj.checkReceiptNotInBox(true,"NotBlank");
         }
 
 

@@ -152,8 +152,9 @@ public final class OcrCaptureActivity extends AppCompatActivity {
         findViewById(R.id.textViewCameraCapture).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+              // captureTheImage();
                 alertDialogShowing();
-               // mCameraSource.takePicture(null, mPicture);
+
             }
         });
     }
@@ -356,7 +357,7 @@ public final class OcrCaptureActivity extends AppCompatActivity {
                             firstTime = false;
                             time = new Timer();
                             chatTimerTask = new MyTimer();
-                            time.scheduleAtFixedRate(chatTimerTask, 3000, 3000);
+                            time.scheduleAtFixedRate(chatTimerTask, 1000, 1000);
 
 
 
@@ -770,22 +771,7 @@ public final class OcrCaptureActivity extends AppCompatActivity {
 //                MyTimer1  chatTimerTask1 = new MyTimer1();
 //                time1.scheduleAtFixedRate(chatTimerTask1, 5000, 3000);
 //                time1.cancel();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+               // mCameraSource.release();
 
 
             }
