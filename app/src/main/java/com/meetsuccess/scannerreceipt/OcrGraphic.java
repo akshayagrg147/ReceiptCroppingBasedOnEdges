@@ -208,7 +208,7 @@ public class OcrGraphic extends GraphicOverlay.Graphic {
                obj.checkReceiptNotInBox(false, "NotBlank");
             }else {
 
-                //Please come closer to capture the face
+                //true means receipts is not in box
 
                 obj.checkReceiptNotInBox(true,"NotBlank");
             }
@@ -233,7 +233,7 @@ public class OcrGraphic extends GraphicOverlay.Graphic {
         else {
 
 
-            //Place your face inside square box
+             //true means receipts is not in box
 
              obj.checkReceiptNotInBox(true,"NotBlank");
         }
