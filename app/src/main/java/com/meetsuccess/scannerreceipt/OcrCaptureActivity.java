@@ -27,11 +27,16 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.hardware.Camera;
+import android.media.ExifInterface;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -60,8 +65,10 @@ import com.meetsuccess.scannerreceipt.ui.camera.GraphicOverlay;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -254,14 +261,95 @@ public final class OcrCaptureActivity extends AppCompatActivity {
                     myBitmap= Bitmap.createBitmap(myBitmap, rectf.left, (int) rectf.top - 50, (int) width, (int) height);
                    // Bitmap croppedBmp = Bitmap.createBitmap(tempBitmap, xValue, (int) face.getPosition().y - 50, (int) face.getWidth(), (int) face.getHeight());
 
+                    Bitmap bitmap =  GetRotationUri(getImageUri(OcrCaptureActivity.this,myBitmap));
+                    if(bitmap!=null){
+                        byte[] croppedBitMap = getByteArrayFromBitMap(bitmap);
 
 
-                    byte[] croppedBitMap = getByteArrayFromBitMap(myBitmap);
-                    saveTemplateFromByteArray(croppedBitMap, "croppedfile", OcrCaptureActivity.this);
-                    alertDialogShowing();
+                        saveTemplateFromByteArray(croppedBitMap, "croppedfile", OcrCaptureActivity.this);
+                        alertDialogShowing();
+
+                    }
+
+
 
                 }
             };
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
+    }
+    private Bitmap GetRotationUri(Uri mCurrentPhotoUri) {
+        int IMAGE_SIZE = 1280;
+        Bitmap bitmapAttachment=null;
+        String mCurrentPhotoPath = mCurrentPhotoUri.getPath();
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.Options bmOptions2 = new BitmapFactory.Options();
+        bmOptions2.inJustDecodeBounds = true;
+        InputStream inputStream = null;
+        try {
+            inputStream = this.getContentResolver().openInputStream(mCurrentPhotoUri);
+            BitmapFactory.decodeStream(inputStream, null, bmOptions);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+        int scaleFactor = Math.min(photoW / IMAGE_SIZE, photoH / IMAGE_SIZE);
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+
+        try {
+            inputStream = this.getContentResolver().openInputStream(mCurrentPhotoUri);
+             bitmapAttachment = BitmapFactory.decodeStream(inputStream, null, bmOptions);
+            ExifInterface ei = null;
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    ei = new ExifInterface(inputStream);
+                } else {
+                    if (mCurrentPhotoPath != null) {
+                        ei = new ExifInterface(mCurrentPhotoPath);
+                    }
+                }
+                if (ei != null) {
+                    int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                            ExifInterface.ORIENTATION_UNDEFINED);
+                    switch (orientation) {
+                        case ExifInterface.ORIENTATION_ROTATE_90:
+                            bitmapAttachment = rotateImage(bitmapAttachment, 90);
+                            break;
+                        case ExifInterface.ORIENTATION_ROTATE_180:
+                            bitmapAttachment = rotateImage(bitmapAttachment, 180);
+                            break;
+                        case ExifInterface.ORIENTATION_ROTATE_270:
+                            bitmapAttachment = rotateImage(bitmapAttachment, 270);
+                            break;
+                        case ExifInterface.ORIENTATION_NORMAL:
+                        default:
+                            break;
+                    }
+
+
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return bitmapAttachment;
+    }
+
+    private Bitmap rotateImage(Bitmap source, float angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
+                matrix, true);
+    }
 
     public static void saveTemplateFromByteArray(byte[] data, String name, Context context) {
 
